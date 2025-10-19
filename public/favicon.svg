@@ -1,0 +1,13 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="64" height="64" fill="#0A0512"/>
+  <text x="8" y="20" font-family="monospace" font-size="12" fill="#FFD700" opacity="0.9">╱╲</text>
+  <text x="28" y="20" font-family="monospace" font-size="12" fill="#FFD700" opacity="0.8">░▒</text>
+  <text x="48" y="20" font-family="monospace" font-size="12" fill="#FFD700" opacity="0.9">▓█</text>
+  <text x="8" y="36" font-family="monospace" font-size="12" fill="#FFD700" opacity="0.8">▓█</text>
+  <text x="28" y="36" font-family="monospace" font-size="12" fill="#FFD700">◆◇</text>
+  <text x="48" y="36" font-family="monospace" font-size="12" fill="#FFD700" opacity="0.8">╱╲</text>
+  <text x="8" y="52" font-family="monospace" font-size="12" fill="#FFD700" opacity="0.9">░▒</text>
+  <text x="28" y="52" font-family="monospace" font-size="12" fill="#FFD700" opacity="0.9">╱╲</text>
+  <text x="48" y="52" font-family="monospace" font-size="12" fill="#FFD700" opacity="0.8">◆◇</text>
+</svg>
+
