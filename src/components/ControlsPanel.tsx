@@ -16,13 +16,15 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { AsciiCanvasHandle } from "./AsciiCanvas";
 import { exportReactComponent } from "@/lib/exporters/exportReactComponent";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, X } from "lucide-react";
 
 interface ControlsPanelProps {
   config: AsciiConfig;
   onConfigChange: (newConfig: Partial<AsciiConfig>) => void;
   canvasRef: React.RefObject<AsciiCanvasHandle | null>;
   onOpenPreview: (componentCode: string) => void;
+  bgColor: string;
+  onClose?: () => void;
 }
 
 const defaultConfig: AsciiConfig = {
@@ -71,6 +73,8 @@ export default function ControlsPanel({
   onConfigChange,
   canvasRef,
   onOpenPreview,
+  bgColor,
+  onClose,
 }: ControlsPanelProps) {
   const [isExporting, setIsExporting] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -174,21 +178,41 @@ export default function ControlsPanel({
   );
 
   return (
-    <div className="space-y-4 md:space-y-6">
-      {/* Header */}
-      <h2 className="text-sm md:text-sm font-medium text-white/60 uppercase tracking-wider">
-        Controls
-      </h2>
+    <div>
+      {/* Sticky Actions */}
+      <div
+        className="sticky top-0 z-10 p-3 md:p-4 -mx-0 backdrop-blur-3xl shadow-2xl border-b border-t-0 rounded-t-lg border-white/20"
+        style={{
+          background: `linear-gradient(135deg, 
+            ${bgColor.replace("0.6)", "0.95)")} 0%, 
+            ${bgColor.replace("0.6)", "0.9)")} 50%, 
+            ${bgColor.replace("0.6)", "0.95)")} 100%)`,
+          boxShadow: `
+            0 8px 32px ${bgColor.replace("0.6)", "0.4)")},
+            inset 0 1px 0 rgba(255, 255, 255, 0.1),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.2)
+          `,
+        }}
+      >
+        {/* Mobile Close Button */}
+        {onClose && (
+          <div className="flex items-center justify-between mb-2 md:hidden">
+            <h3 className="text-sm font-semibold text-white/80">Controls</h3>
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={onClose}
+              className="h-8 w-8 text-white/60 hover:text-white hover:bg-white/10 touch-manipulation"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
 
-      {/* Action Buttons */}
-      <div>
-        <h3 className="text-xs font-medium mb-3 text-white/40 uppercase tracking-wide">
-          Actions
-        </h3>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="flex flex-wrap gap-1.5">
           <Button
             onClick={handleRandomizeAll}
-            className="h-9 md:h-8 text-xs touch-manipulation"
+            className="flex-1 min-w-[80px] h-8 text-xs touch-manipulation"
             variant="outline"
             disabled={isExporting}
           >
@@ -196,7 +220,7 @@ export default function ControlsPanel({
           </Button>
           <Button
             onClick={handleResetAll}
-            className="h-9 md:h-8 text-xs touch-manipulation"
+            className="flex-1 min-w-[80px] h-8 text-xs touch-manipulation"
             variant="outline"
             disabled={isExporting}
           >
@@ -204,15 +228,15 @@ export default function ControlsPanel({
           </Button>
           <Button
             onClick={exportPNG}
-            className="h-9 md:h-8 text-xs touch-manipulation"
+            className="flex-1 min-w-[60px] h-8 text-xs touch-manipulation"
             variant="outline"
             disabled={isExporting}
           >
-            PNG Frame
+            PNG
           </Button>
           <Button
             onClick={exportGIF}
-            className="h-9 md:h-8 text-xs touch-manipulation"
+            className="flex-1 min-w-[60px] h-8 text-xs touch-manipulation"
             variant="outline"
             disabled={isExporting}
           >
@@ -220,7 +244,7 @@ export default function ControlsPanel({
           </Button>
           <Button
             onClick={exportComponent}
-            className="col-span-2 h-9 md:h-8 text-xs touch-manipulation"
+            className="w-full h-8 text-xs touch-manipulation"
             variant="outline"
             disabled={isExporting}
           >
@@ -229,469 +253,472 @@ export default function ControlsPanel({
         </div>
       </div>
 
-      <Separator className="bg-white/5" />
-
-      {/* Motion Section */}
-      <div>
-        <h3 className="text-xs font-medium mb-3 text-white/40 uppercase tracking-wide">
-          Motion
-        </h3>
-        <div className="space-y-2">
-          {renderSlider("speed", "Speed", config.speed, 0, 0.5, 0.01, (val) =>
-            onConfigChange({ speed: val })
-          )}
-          {renderSlider(
-            "noiseStrength",
-            "Noise Strength",
-            config.noiseStrength,
-            0,
-            1,
-            0.01,
-            (val) => onConfigChange({ noiseStrength: val })
-          )}
-          {renderSlider(
-            "distortAmp",
-            "Distortion",
-            config.distortAmp,
-            0,
-            1,
-            0.01,
-            (val) => onConfigChange({ distortAmp: val })
-          )}
-          {renderSlider(
-            "frequency",
-            "Frequency",
-            config.frequency,
-            0,
-            10,
-            0.1,
-            (val) => onConfigChange({ frequency: val })
-          )}
-          {renderSlider(
-            "noiseScale",
-            "Noise Scale",
-            config.noiseScale,
-            0.001,
-            0.02,
-            0.001,
-            (val) => onConfigChange({ noiseScale: val }),
-            (val) => val.toFixed(4)
-          )}
-          {renderSlider(
-            "zRate",
-            "Z Rate",
-            config.zRate,
-            0,
-            0.1,
-            0.001,
-            (val) => onConfigChange({ zRate: val }),
-            (val) => val.toFixed(3)
-          )}
+      {/* Scrollable Content */}
+      <div className="px-4 pt-5 md:px-6 pb-4 md:pb-6 space-y-4 md:space-y-6">
+        {/* Motion Section */}
+        <div>
+          <h3 className="text-xs font-medium mb-3 text-white/40 uppercase tracking-wide">
+            Motion
+          </h3>
+          <div className="space-y-2">
+            {renderSlider("speed", "Speed", config.speed, 0, 0.5, 0.01, (val) =>
+              onConfigChange({ speed: val })
+            )}
+            {renderSlider(
+              "noiseStrength",
+              "Noise Strength",
+              config.noiseStrength,
+              0,
+              1,
+              0.01,
+              (val) => onConfigChange({ noiseStrength: val })
+            )}
+            {renderSlider(
+              "noiseScale",
+              "Noise Scale",
+              config.noiseScale,
+              0.001,
+              0.02,
+              0.001,
+              (val) => onConfigChange({ noiseScale: val }),
+              (val) => val.toFixed(4)
+            )}
+            {renderSlider(
+              "distortAmp",
+              "Distortion",
+              config.distortAmp,
+              0,
+              1,
+              0.01,
+              (val) => onConfigChange({ distortAmp: val })
+            )}
+            {renderSlider(
+              "frequency",
+              "Frequency",
+              config.frequency,
+              0,
+              10,
+              0.1,
+              (val) => onConfigChange({ frequency: val })
+            )}
+            {renderSlider(
+              "zRate",
+              "Z Rate",
+              config.zRate,
+              0,
+              0.1,
+              0.001,
+              (val) => onConfigChange({ zRate: val }),
+              (val) => val.toFixed(3)
+            )}
+          </div>
         </div>
-      </div>
 
-      <Separator className="bg-white/5" />
+        <Separator className="bg-white/5" />
 
-      {/* Appearance Section */}
-      <div>
-        <h3 className="text-xs font-medium mb-3 text-white/40 uppercase tracking-wide">
-          Appearance
-        </h3>
-        <div className="space-y-2">
-          {renderSlider(
-            "brightness",
-            "Brightness",
-            config.brightness,
-            0,
-            3,
-            0.01,
-            (val) => onConfigChange({ brightness: val })
-          )}
-          {renderSlider(
-            "contrast",
-            "Contrast",
-            config.contrast,
-            0,
-            2,
-            0.01,
-            (val) => onConfigChange({ contrast: val })
-          )}
-          {renderSlider(
-            "hue",
-            "Hue",
-            config.hue,
-            0,
-            360,
-            0.1,
-            (val) => onConfigChange({ hue: val }),
-            (val) => `${val.toFixed(1)}°`
-          )}
-          {renderSlider(
-            "saturation",
-            "Saturation",
-            config.saturation,
-            0,
-            2,
-            0.01,
-            (val) => onConfigChange({ saturation: val })
-          )}
-          {renderSlider("gamma", "Gamma", config.gamma, 0.5, 2, 0.01, (val) =>
-            onConfigChange({ gamma: val })
-          )}
-          {renderSlider(
-            "vignette",
-            "Vignette",
-            config.vignette,
-            0,
-            1,
-            0.01,
-            (val) => onConfigChange({ vignette: val })
-          )}
-          {renderSlider(
-            "vignetteSoftness",
-            "Vignette Softness",
-            config.vignetteSoftness,
-            0.1,
-            2,
-            0.01,
-            (val) => onConfigChange({ vignetteSoftness: val })
-          )}
+        {/* Appearance Section */}
+        <div>
+          <h3 className="text-xs font-medium mb-3 text-white/40 uppercase tracking-wide">
+            Appearance
+          </h3>
+          <div className="space-y-2">
+            {renderSlider(
+              "brightness",
+              "Brightness",
+              config.brightness,
+              0,
+              3,
+              0.01,
+              (val) => onConfigChange({ brightness: val })
+            )}
+            {renderSlider(
+              "contrast",
+              "Contrast",
+              config.contrast,
+              0,
+              2,
+              0.01,
+              (val) => onConfigChange({ contrast: val })
+            )}
+            {renderSlider(
+              "hue",
+              "Hue",
+              config.hue,
+              0,
+              360,
+              0.1,
+              (val) => onConfigChange({ hue: val }),
+              (val) => `${val.toFixed(1)}°`
+            )}
+            {renderSlider(
+              "saturation",
+              "Saturation",
+              config.saturation,
+              0,
+              2,
+              0.01,
+              (val) => onConfigChange({ saturation: val })
+            )}
+            {renderSlider("gamma", "Gamma", config.gamma, 0.5, 2, 0.01, (val) =>
+              onConfigChange({ gamma: val })
+            )}
+            {renderSlider(
+              "vignette",
+              "Vignette",
+              config.vignette,
+              0,
+              1,
+              0.01,
+              (val) => onConfigChange({ vignette: val })
+            )}
+            {renderSlider(
+              "vignetteSoftness",
+              "Vignette Softness",
+              config.vignetteSoftness,
+              0.1,
+              2,
+              0.01,
+              (val) => onConfigChange({ vignetteSoftness: val })
+            )}
+          </div>
         </div>
-      </div>
 
-      <Separator className="bg-white/5" />
+        <Separator className="bg-white/5" />
 
-      {/* ASCII Glyphs Section */}
-      <div>
-        <h3 className="text-xs font-medium mb-3 text-white/40 uppercase tracking-wide">
-          ASCII Glyphs
-        </h3>
-        <div className="space-y-2">
-          {renderSlider(
-            "cell",
-            "Cell Size",
-            config.cell,
-            8,
-            32,
-            1,
-            (val) => onConfigChange({ cell: val }),
-            (val) => `${val}px`
-          )}
-          {renderSlider(
-            "glyphSharpness",
-            "Sharpness",
-            config.glyphSharpness,
-            0.01,
-            0.2,
-            0.001,
-            (val) => onConfigChange({ glyphSharpness: val }),
-            (val) => val.toFixed(3)
-          )}
-          <div className="space-y-1">
-            <Label htmlFor="charset" className="text-xs text-white/60">
-              Character Set
-            </Label>
-            <Select
-              value={config.charsetPreset}
-              onValueChange={(value) =>
-                onConfigChange({
-                  charsetPreset: value as AsciiConfig["charsetPreset"],
-                })
-              }
+        {/* ASCII Glyphs Section */}
+        <div>
+          <h3 className="text-xs font-medium mb-3 text-white/40 uppercase tracking-wide">
+            ASCII Glyphs
+          </h3>
+          <div className="space-y-2">
+            {renderSlider(
+              "cell",
+              "Cell Size",
+              config.cell,
+              8,
+              32,
+              1,
+              (val) => onConfigChange({ cell: val }),
+              (val) => `${val}px`
+            )}
+            {renderSlider(
+              "glyphSharpness",
+              "Sharpness",
+              config.glyphSharpness,
+              0.01,
+              0.2,
+              0.001,
+              (val) => onConfigChange({ glyphSharpness: val }),
+              (val) => val.toFixed(3)
+            )}
+            <div className="space-y-1">
+              <Label htmlFor="charset" className="text-xs text-white/60">
+                Character Set
+              </Label>
+              <Select
+                value={config.charsetPreset}
+                onValueChange={(value) =>
+                  onConfigChange({
+                    charsetPreset: value as AsciiConfig["charsetPreset"],
+                  })
+                }
+              >
+                <SelectTrigger id="charset">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="minimal">Minimal</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="full">Full</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="bw" className="text-xs text-white/60">
+                Black & White
+              </Label>
+              <Switch
+                id="bw"
+                checked={config.bw}
+                onCheckedChange={(checked) => onConfigChange({ bw: checked })}
+              />
+            </div>
+          </div>
+        </div>
+
+        <Separator className="bg-white/5" />
+
+        {/* Background Color Section */}
+        <div>
+          <h3 className="text-xs font-medium mb-3 text-white/40 uppercase tracking-wide">
+            Background Color
+          </h3>
+          <div className="space-y-3">
+            {/* Color Swatches */}
+            <div className="grid grid-cols-4 gap-2">
+              {BG_PRESETS.map((preset) => {
+                const isActive =
+                  config.bg[0] === preset.rgb[0] &&
+                  config.bg[1] === preset.rgb[1] &&
+                  config.bg[2] === preset.rgb[2];
+                return (
+                  <button
+                    key={preset.name}
+                    onClick={() =>
+                      onConfigChange({
+                        bg: preset.rgb as [number, number, number],
+                      })
+                    }
+                    className={`h-12 md:h-10 rounded-md border-2 transition-all touch-manipulation ${
+                      isActive
+                        ? "border-white/60 ring-2 ring-white/20"
+                        : "border-white/10 hover:border-white/30"
+                    }`}
+                    style={{
+                      backgroundColor: `rgb(${preset.rgb[0] * 255}, ${
+                        preset.rgb[1] * 255
+                      }, ${preset.rgb[2] * 255})`,
+                    }}
+                    title={preset.name}
+                  />
+                );
+              })}
+            </div>
+
+            {/* Fine-tuning toggle */}
+            <Button
+              onClick={() => setShowBgFinetuning(!showBgFinetuning)}
+              variant="ghost"
+              className="w-full h-8 md:h-7 text-xs touch-manipulation"
             >
-              <SelectTrigger id="charset">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="minimal">Minimal</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="full">Full</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center justify-between">
-            <Label htmlFor="bw" className="text-xs text-white/60">
-              Black & White
-            </Label>
-            <Switch
-              id="bw"
-              checked={config.bw}
-              onCheckedChange={(checked) => onConfigChange({ bw: checked })}
-            />
+              {showBgFinetuning ? "Hide" : "Show"} Fine-tuning
+              {showBgFinetuning ? (
+                <ChevronUp className="ml-1 h-3 w-3" />
+              ) : (
+                <ChevronDown className="ml-1 h-3 w-3" />
+              )}
+            </Button>
+
+            {/* Fine-tuning sliders */}
+            {showBgFinetuning && (
+              <div className="space-y-2 pt-2">
+                <div className="space-y-1">
+                  <div className="flex justify-between">
+                    <span className="text-xs text-white/40 font-mono">R</span>
+                    <span className="text-xs text-white/40 font-mono">
+                      {config.bg[0].toFixed(3)}
+                    </span>
+                  </div>
+                  <Slider
+                    min={0}
+                    max={0.5}
+                    step={0.001}
+                    value={[config.bg[0]]}
+                    onValueChange={([value]) =>
+                      onConfigChange({
+                        bg: [value, config.bg[1], config.bg[2]],
+                      })
+                    }
+                  />
+                </div>
+                <div className="space-y-1">
+                  <div className="flex justify-between">
+                    <span className="text-xs text-white/40 font-mono">G</span>
+                    <span className="text-xs text-white/40 font-mono">
+                      {config.bg[1].toFixed(3)}
+                    </span>
+                  </div>
+                  <Slider
+                    min={0}
+                    max={0.5}
+                    step={0.001}
+                    value={[config.bg[1]]}
+                    onValueChange={([value]) =>
+                      onConfigChange({
+                        bg: [config.bg[0], value, config.bg[2]],
+                      })
+                    }
+                  />
+                </div>
+                <div className="space-y-1">
+                  <div className="flex justify-between">
+                    <span className="text-xs text-white/40 font-mono">B</span>
+                    <span className="text-xs text-white/40 font-mono">
+                      {config.bg[2].toFixed(3)}
+                    </span>
+                  </div>
+                  <Slider
+                    min={0}
+                    max={0.5}
+                    step={0.001}
+                    value={[config.bg[2]]}
+                    onValueChange={([value]) =>
+                      onConfigChange({
+                        bg: [config.bg[0], config.bg[1], value],
+                      })
+                    }
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
-      </div>
 
-      <Separator className="bg-white/5" />
+        <Separator className="bg-white/5" />
 
-      {/* Background Color Section */}
-      <div>
-        <h3 className="text-xs font-medium mb-3 text-white/40 uppercase tracking-wide">
-          Background Color
-        </h3>
-        <div className="space-y-3">
-          {/* Color Swatches */}
-          <div className="grid grid-cols-4 gap-2">
-            {BG_PRESETS.map((preset) => {
-              const isActive =
-                config.bg[0] === preset.rgb[0] &&
-                config.bg[1] === preset.rgb[1] &&
-                config.bg[2] === preset.rgb[2];
-              return (
-                <button
-                  key={preset.name}
-                  onClick={() =>
-                    onConfigChange({
-                      bg: preset.rgb as [number, number, number],
-                    })
-                  }
-                  className={`h-12 md:h-10 rounded-md border-2 transition-all touch-manipulation ${
-                    isActive
-                      ? "border-white/60 ring-2 ring-white/20"
-                      : "border-white/10 hover:border-white/30"
-                  }`}
-                  style={{
-                    backgroundColor: `rgb(${preset.rgb[0] * 255}, ${
-                      preset.rgb[1] * 255
-                    }, ${preset.rgb[2] * 255})`,
-                  }}
-                  title={preset.name}
-                />
-              );
-            })}
+        {/* Foreground Tint Section */}
+        <div>
+          <h3 className="text-xs font-medium mb-3 text-white/40 uppercase tracking-wide">
+            Foreground Tint
+          </h3>
+          <div className="space-y-2">
+            <div className="space-y-1">
+              <div className="flex justify-between">
+                <span className="text-xs text-white/40 font-mono">R</span>
+                <span className="text-xs text-white/40 font-mono">
+                  {config.tint[0].toFixed(2)}
+                </span>
+              </div>
+              <Slider
+                min={0}
+                max={1}
+                step={0.01}
+                value={[config.tint[0]]}
+                onValueChange={([value]) =>
+                  onConfigChange({
+                    tint: [value, config.tint[1], config.tint[2]],
+                  })
+                }
+              />
+            </div>
+            <div className="space-y-1">
+              <div className="flex justify-between">
+                <span className="text-xs text-white/40 font-mono">G</span>
+                <span className="text-xs text-white/40 font-mono">
+                  {config.tint[1].toFixed(2)}
+                </span>
+              </div>
+              <Slider
+                min={0}
+                max={1}
+                step={0.01}
+                value={[config.tint[1]]}
+                onValueChange={([value]) =>
+                  onConfigChange({
+                    tint: [config.tint[0], value, config.tint[2]],
+                  })
+                }
+              />
+            </div>
+            <div className="space-y-1">
+              <div className="flex justify-between">
+                <span className="text-xs text-white/40 font-mono">B</span>
+                <span className="text-xs text-white/40 font-mono">
+                  {config.tint[2].toFixed(2)}
+                </span>
+              </div>
+              <Slider
+                min={0}
+                max={1}
+                step={0.01}
+                value={[config.tint[2]]}
+                onValueChange={([value]) =>
+                  onConfigChange({
+                    tint: [config.tint[0], config.tint[1], value],
+                  })
+                }
+              />
+            </div>
           </div>
+        </div>
 
-          {/* Fine-tuning toggle */}
+        <Separator className="bg-white/5" />
+
+        {/* Advanced Section (Collapsed by default) */}
+        <div>
           <Button
-            onClick={() => setShowBgFinetuning(!showBgFinetuning)}
+            onClick={() => setShowAdvanced(!showAdvanced)}
             variant="ghost"
-            className="w-full h-8 md:h-7 text-xs touch-manipulation"
+            className="w-full h-9 md:h-8 text-xs justify-between px-0 touch-manipulation"
           >
-            {showBgFinetuning ? "Hide" : "Show"} Fine-tuning
-            {showBgFinetuning ? (
-              <ChevronUp className="ml-1 h-3 w-3" />
+            <span className="uppercase tracking-wide font-medium">
+              Advanced
+            </span>
+            {showAdvanced ? (
+              <ChevronUp className="h-4 w-4" />
             ) : (
-              <ChevronDown className="ml-1 h-3 w-3" />
+              <ChevronDown className="h-4 w-4" />
             )}
           </Button>
 
-          {/* Fine-tuning sliders */}
-          {showBgFinetuning && (
-            <div className="space-y-2 pt-2">
-              <div className="space-y-1">
-                <div className="flex justify-between">
-                  <span className="text-xs text-white/40 font-mono">R</span>
-                  <span className="text-xs text-white/40 font-mono">
-                    {config.bg[0].toFixed(3)}
-                  </span>
-                </div>
-                <Slider
-                  min={0}
-                  max={0.5}
-                  step={0.001}
-                  value={[config.bg[0]]}
-                  onValueChange={([value]) =>
-                    onConfigChange({
-                      bg: [value, config.bg[1], config.bg[2]],
-                    })
-                  }
-                />
+          {showAdvanced && (
+            <div className="space-y-2 mt-3">
+              {/* Seeds */}
+              <div className="space-y-2">
+                <Label className="text-xs text-white/60">Seeds</Label>
+                {renderSlider(
+                  "seed1",
+                  "Seed 1",
+                  config.seed1,
+                  0,
+                  6.28,
+                  0.001,
+                  (val) => onConfigChange({ seed1: val }),
+                  (val) => val.toFixed(3)
+                )}
+                {renderSlider(
+                  "seed2",
+                  "Seed 2",
+                  config.seed2,
+                  0,
+                  6.28,
+                  0.001,
+                  (val) => onConfigChange({ seed2: val }),
+                  (val) => val.toFixed(3)
+                )}
               </div>
-              <div className="space-y-1">
-                <div className="flex justify-between">
-                  <span className="text-xs text-white/40 font-mono">G</span>
-                  <span className="text-xs text-white/40 font-mono">
-                    {config.bg[1].toFixed(3)}
-                  </span>
+
+              <Separator className="bg-white/5 my-3" />
+
+              {/* Export Settings */}
+              <div className="space-y-2">
+                <Label className="text-xs text-white/60">Export Settings</Label>
+                {renderSlider(
+                  "fps",
+                  "FPS",
+                  config.fps,
+                  15,
+                  60,
+                  1,
+                  (val) => onConfigChange({ fps: val }),
+                  (val) => val.toString()
+                )}
+                {renderSlider(
+                  "duration",
+                  "Duration",
+                  config.duration,
+                  1,
+                  10,
+                  0.5,
+                  (val) => onConfigChange({ duration: val }),
+                  (val) => `${val}s`
+                )}
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="loop" className="text-xs text-white/60">
+                    Loop Animation
+                  </Label>
+                  <Switch
+                    id="loop"
+                    checked={config.loop}
+                    onCheckedChange={(checked) =>
+                      onConfigChange({ loop: checked })
+                    }
+                  />
                 </div>
-                <Slider
-                  min={0}
-                  max={0.5}
-                  step={0.001}
-                  value={[config.bg[1]]}
-                  onValueChange={([value]) =>
-                    onConfigChange({
-                      bg: [config.bg[0], value, config.bg[2]],
-                    })
-                  }
-                />
-              </div>
-              <div className="space-y-1">
-                <div className="flex justify-between">
-                  <span className="text-xs text-white/40 font-mono">B</span>
-                  <span className="text-xs text-white/40 font-mono">
-                    {config.bg[2].toFixed(3)}
-                  </span>
-                </div>
-                <Slider
-                  min={0}
-                  max={0.5}
-                  step={0.001}
-                  value={[config.bg[2]]}
-                  onValueChange={([value]) =>
-                    onConfigChange({
-                      bg: [config.bg[0], config.bg[1], value],
-                    })
-                  }
-                />
               </div>
             </div>
           )}
         </div>
-      </div>
-
-      <Separator className="bg-white/5" />
-
-      {/* Foreground Tint Section */}
-      <div>
-        <h3 className="text-xs font-medium mb-3 text-white/40 uppercase tracking-wide">
-          Foreground Tint
-        </h3>
-        <div className="space-y-2">
-          <div className="space-y-1">
-            <div className="flex justify-between">
-              <span className="text-xs text-white/40 font-mono">R</span>
-              <span className="text-xs text-white/40 font-mono">
-                {config.tint[0].toFixed(2)}
-              </span>
-            </div>
-            <Slider
-              min={0}
-              max={1}
-              step={0.01}
-              value={[config.tint[0]]}
-              onValueChange={([value]) =>
-                onConfigChange({
-                  tint: [value, config.tint[1], config.tint[2]],
-                })
-              }
-            />
-          </div>
-          <div className="space-y-1">
-            <div className="flex justify-between">
-              <span className="text-xs text-white/40 font-mono">G</span>
-              <span className="text-xs text-white/40 font-mono">
-                {config.tint[1].toFixed(2)}
-              </span>
-            </div>
-            <Slider
-              min={0}
-              max={1}
-              step={0.01}
-              value={[config.tint[1]]}
-              onValueChange={([value]) =>
-                onConfigChange({
-                  tint: [config.tint[0], value, config.tint[2]],
-                })
-              }
-            />
-          </div>
-          <div className="space-y-1">
-            <div className="flex justify-between">
-              <span className="text-xs text-white/40 font-mono">B</span>
-              <span className="text-xs text-white/40 font-mono">
-                {config.tint[2].toFixed(2)}
-              </span>
-            </div>
-            <Slider
-              min={0}
-              max={1}
-              step={0.01}
-              value={[config.tint[2]]}
-              onValueChange={([value]) =>
-                onConfigChange({
-                  tint: [config.tint[0], config.tint[1], value],
-                })
-              }
-            />
-          </div>
-        </div>
-      </div>
-
-      <Separator className="bg-white/5" />
-
-      {/* Advanced Section (Collapsed by default) */}
-      <div>
-        <Button
-          onClick={() => setShowAdvanced(!showAdvanced)}
-          variant="ghost"
-          className="w-full h-9 md:h-8 text-xs justify-between px-0 touch-manipulation"
-        >
-          <span className="uppercase tracking-wide font-medium">Advanced</span>
-          {showAdvanced ? (
-            <ChevronUp className="h-4 w-4" />
-          ) : (
-            <ChevronDown className="h-4 w-4" />
-          )}
-        </Button>
-
-        {showAdvanced && (
-          <div className="space-y-2 mt-3">
-            {/* Seeds */}
-            <div className="space-y-2">
-              <Label className="text-xs text-white/60">Seeds</Label>
-              {renderSlider(
-                "seed1",
-                "Seed 1",
-                config.seed1,
-                0,
-                6.28,
-                0.001,
-                (val) => onConfigChange({ seed1: val }),
-                (val) => val.toFixed(3)
-              )}
-              {renderSlider(
-                "seed2",
-                "Seed 2",
-                config.seed2,
-                0,
-                6.28,
-                0.001,
-                (val) => onConfigChange({ seed2: val }),
-                (val) => val.toFixed(3)
-              )}
-            </div>
-
-            <Separator className="bg-white/5 my-3" />
-
-            {/* Export Settings */}
-            <div className="space-y-2">
-              <Label className="text-xs text-white/60">Export Settings</Label>
-              {renderSlider(
-                "fps",
-                "FPS",
-                config.fps,
-                15,
-                60,
-                1,
-                (val) => onConfigChange({ fps: val }),
-                (val) => val.toString()
-              )}
-              {renderSlider(
-                "duration",
-                "Duration",
-                config.duration,
-                1,
-                10,
-                0.5,
-                (val) => onConfigChange({ duration: val }),
-                (val) => `${val}s`
-              )}
-              <div className="flex items-center justify-between">
-                <Label htmlFor="loop" className="text-xs text-white/60">
-                  Loop Animation
-                </Label>
-                <Switch
-                  id="loop"
-                  checked={config.loop}
-                  onCheckedChange={(checked) =>
-                    onConfigChange({ loop: checked })
-                  }
-                />
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
