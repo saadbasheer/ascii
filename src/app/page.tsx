@@ -50,7 +50,7 @@ export default function Home() {
     <main className="relative w-full h-full min-h-screen overflow-hidden bg-black">
       <AsciiCanvas ref={canvasRef} config={config} />
       
-      <div className="fixed top-4 right-4 z-50">
+      <div className="fixed top-4 left-1/2 -translate-x-1/2 md:left-auto md:right-4 md:translate-x-0 z-50 w-[calc(100vw-2rem)] md:w-auto">
         <FloatingControls
           config={config}
           onConfigChange={handleConfigChange}

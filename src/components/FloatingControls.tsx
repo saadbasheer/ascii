@@ -39,16 +39,16 @@ export default function FloatingControls({
 
   return (
     <>
-      <div className="flex items-start gap-2">
+      <div className="flex flex-col md:flex-row items-center md:items-start gap-2">
         {isExpanded && (
           <div
-            className="w-96 max-h-[calc(100vh-2rem)] rounded-lg border border-white/10 backdrop-blur-md shadow-2xl flex flex-col transition-colors duration-300"
+            className="w-full md:w-96 max-h-[calc(100vh-8rem)] md:max-h-[calc(100vh-2rem)] rounded-lg border border-white/10 backdrop-blur-xl shadow-2xl flex flex-col transition-colors duration-300"
             style={{
               backgroundColor: bgColor,
               boxShadow: `0 0 40px ${bgColor}, 0 20px 25px -5px rgba(0, 0, 0, 0.3)`,
             }}
           >
-            <div className="flex-1 overflow-y-auto p-6 hide-scrollbar">
+            <div className="flex-1 overflow-y-auto p-4 md:p-6 hide-scrollbar">
               <ControlsPanel
                 config={config}
                 onConfigChange={onConfigChange}
@@ -63,16 +63,17 @@ export default function FloatingControls({
           size="icon"
           variant="ghost"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="h-10 w-10 rounded-lg border border-white/10 backdrop-blur-xl hover:bg-white/20 transition-all text-white"
+          className="h-10 w-10 md:h-10 md:w-10 rounded-lg border border-white/10 backdrop-blur-xl hover:bg-white/20 transition-all text-white touch-manipulation"
           style={{
             backgroundColor: bgColor,
           }}
         >
           {isExpanded ? (
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4 md:block hidden" />
           ) : (
             <Settings className="h-4 w-4" />
           )}
+          {isExpanded && <Settings className="h-4 w-4 md:hidden" />}
         </Button>
       </div>
 

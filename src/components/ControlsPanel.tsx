@@ -174,9 +174,9 @@ export default function ControlsPanel({
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Header */}
-      <h2 className="text-sm font-medium text-white/60 uppercase tracking-wider">
+      <h2 className="text-sm md:text-sm font-medium text-white/60 uppercase tracking-wider">
         Controls
       </h2>
 
@@ -188,7 +188,7 @@ export default function ControlsPanel({
         <div className="grid grid-cols-2 gap-2">
           <Button
             onClick={handleRandomizeAll}
-            className="h-8 text-xs"
+            className="h-9 md:h-8 text-xs touch-manipulation"
             variant="outline"
             disabled={isExporting}
           >
@@ -196,7 +196,7 @@ export default function ControlsPanel({
           </Button>
           <Button
             onClick={handleResetAll}
-            className="h-8 text-xs"
+            className="h-9 md:h-8 text-xs touch-manipulation"
             variant="outline"
             disabled={isExporting}
           >
@@ -204,7 +204,7 @@ export default function ControlsPanel({
           </Button>
           <Button
             onClick={exportPNG}
-            className="h-8 text-xs"
+            className="h-9 md:h-8 text-xs touch-manipulation"
             variant="outline"
             disabled={isExporting}
           >
@@ -212,7 +212,7 @@ export default function ControlsPanel({
           </Button>
           <Button
             onClick={exportGIF}
-            className="h-8 text-xs"
+            className="h-9 md:h-8 text-xs touch-manipulation"
             variant="outline"
             disabled={isExporting}
           >
@@ -220,7 +220,7 @@ export default function ControlsPanel({
           </Button>
           <Button
             onClick={exportComponent}
-            className="col-span-2 h-8 text-xs"
+            className="col-span-2 h-9 md:h-8 text-xs touch-manipulation"
             variant="outline"
             disabled={isExporting}
           >
@@ -445,7 +445,7 @@ export default function ControlsPanel({
                       bg: preset.rgb as [number, number, number],
                     })
                   }
-                  className={`h-10 rounded-md border-2 transition-all ${
+                  className={`h-12 md:h-10 rounded-md border-2 transition-all touch-manipulation ${
                     isActive
                       ? "border-white/60 ring-2 ring-white/20"
                       : "border-white/10 hover:border-white/30"
@@ -465,7 +465,7 @@ export default function ControlsPanel({
           <Button
             onClick={() => setShowBgFinetuning(!showBgFinetuning)}
             variant="ghost"
-            className="w-full h-7 text-xs"
+            className="w-full h-8 md:h-7 text-xs touch-manipulation"
           >
             {showBgFinetuning ? "Hide" : "Show"} Fine-tuning
             {showBgFinetuning ? (
@@ -615,7 +615,7 @@ export default function ControlsPanel({
         <Button
           onClick={() => setShowAdvanced(!showAdvanced)}
           variant="ghost"
-          className="w-full h-8 text-xs justify-between px-0"
+          className="w-full h-9 md:h-8 text-xs justify-between px-0 touch-manipulation"
         >
           <span className="uppercase tracking-wide font-medium">Advanced</span>
           {showAdvanced ? (
